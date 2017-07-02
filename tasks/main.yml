@@ -1,7 +1,17 @@
 ---
 - name: put hdfs-zkfc.rb eye config file
   template: src=hdfs-zkfc.rb dest=/etc/eye/hdfs-zkfc.rb owner=root group=root mode=0644
+  when: ansible_os_family != "Elbrus"
 
 - name: load config in eye
   command: bash -c "source /usr/local/rvm/scripts/rvm && eye l /etc/eye/apps.eye"
-  sudo: yes
+  become: yes
+  when: ansible_os_family != "Elbrus"
+
+- name: put {{ hadoop_distr_prefix }}/bin/zkfc_start.sh
+  template: src=zkfc_start.sh dest={{ hadoop_distr_prefix }}/bin/zkfc_start.sh
+  when: "ansible_os_family == 'Elbrus'"
+
+- name: chmod {{ hadoop_distr_prefix }}/bin/zkfc_start.sh
+  shell: chmod 0755 {{ hadoop_distr_prefix }}/bin/zkfc_start.sh
+  when: "ansible_os_family == 'Elbrus'"
