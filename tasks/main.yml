@@ -16,6 +16,18 @@
   shell: chmod 0755 {{ hadoop_distr_prefix }}/bin/zkfc_start.sh
   when: "ansible_os_family == 'Elbrus'"
 
+- name: check if ZK was formatted
+  shell: "{{ zookeeper_distr_prefix }}/bin/zkCli.sh ls /hadoop-ha/{{ hdfs_nameservice_id }}"
+  register: result
+
+- name: print result
+  debug: var=result
+
+- name: format a ZK node
+  shell: "{{ hadoop_distr_prefix }}-{{ env_name }}-{{ hadoop_version }}/bin/hdfs zkfc -formatZK"
+  when: "'does not exist' in result.stderr"
+  run_once: true
+
 - name: put systemd unit file to its destination
   template: src=hdfs-zkfc.service dest=/etc/systemd/system/hdfs-zkfc-{{ env_name }}.service owner=root group=root mode=0644
   when: "ansible_distribution == 'Ubuntu' and ansible_distribution_version|version_compare('16.04', '>=')"
