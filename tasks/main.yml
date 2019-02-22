@@ -16,6 +16,9 @@
   shell: chmod 0755 {{ hadoop_distr_prefix }}/bin/zkfc_start.sh
   when: "ansible_os_family == 'Elbrus'"
 
+- name: check if a port is open
+  wait_for: port={{ zookeeper_client_port }} delay=60
+
 - name: check if ZK was formatted
   shell: "{{ zookeeper_distr_prefix }}/bin/zkCli.sh ls /hadoop-ha/{{ hdfs_nameservice_id }}"
   register: result

@@ -1,1 +1,2 @@
+zookeeper_client_port: 2181
 zookeeper_distr_prefix: /opt/zookeeper
