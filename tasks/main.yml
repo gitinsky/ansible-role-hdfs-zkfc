@@ -1,12 +1,12 @@
 ---
 - name: put hdfs-zkfc.rb eye config file
   template: src=hdfs-zkfc.rb dest=/etc/eye/hdfs-zkfc.rb owner=root group=root mode=0644
-  when: ansible_os_family != "Elbrus" and (not ("ansible_distribution == 'Ubuntu' and ansible_distribution_version|version_compare('16.04', '>=')"))
+  when: ansible_os_family != "Elbrus" and (not ("ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('16.04', '>=')"))
 
 - name: load config in eye
   command: bash -c "source /usr/local/rvm/scripts/rvm && eye l /etc/eye/apps.eye"
   become: yes
-  when: ansible_os_family != "Elbrus" and (not ("ansible_distribution == 'Ubuntu' and ansible_distribution_version|version_compare('16.04', '>=')"))
+  when: ansible_os_family != "Elbrus" and (not ("ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('16.04', '>=')"))
 
 - name: put {{ hadoop_distr_prefix }}/bin/zkfc_start.sh
   template: src=zkfc_start.sh dest={{ hadoop_distr_prefix }}/bin/zkfc_start.sh
@@ -33,9 +33,9 @@
 
 - name: put systemd unit file to its destination
   template: src=hdfs-zkfc.service dest=/etc/systemd/system/hdfs-zkfc-{{ env_name }}.service owner=root group=root mode=0644
-  when: "ansible_distribution == 'Ubuntu' and ansible_distribution_version|version_compare('16.04', '>=')"
+  when: "ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('16.04', '>=')"
   notify: systemctl daemon-reload
 
 - name: enable hdfs-zkfc service
   service: name=hdfs-zkfc-{{ env_name }} enabled=yes state=started
-  when: "ansible_distribution == 'Ubuntu' and ansible_distribution_version|version_compare('16.04', '>=')"
+  when: "ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('16.04', '>=')"
